@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import cn.shyman.library.refresh.RecyclerAdapter;
 import cn.shyman.refresh.R;
-import cn.shyman.refresh.bean.BasicBean;
 import cn.shyman.refresh.bean.StatusInfo;
 import cn.shyman.refresh.databinding.ItemBasicLoadingListBinding;
 import cn.shyman.refresh.databinding.ItemBasicRefreshListBinding;
@@ -20,6 +19,7 @@ public abstract class BasicAdapter<AdapterInfo> extends RecyclerAdapter {
 	/** 当前页码 */
 	private int currentPage = initPage;
 	
+	private AdapterInfo completeAdapterInfo;
 	protected AdapterInfo adapterInfo;
 	
 	/**
@@ -61,40 +61,32 @@ public abstract class BasicAdapter<AdapterInfo> extends RecyclerAdapter {
 		super.notifyRefresh();
 	}
 	
-	/**
-	 * 数据信息处理
-	 *
-	 * @param adapterInfo 数据信息
-	 */
 	public void swipeResult(AdapterInfo adapterInfo) {
-		StatusInfo statusInfo = null;
-		if (adapterInfo != null) {
-			if (adapterInfo instanceof BasicBean) {
-				statusInfo = ((BasicBean) adapterInfo).statusInfo;
-			} else {
-				statusInfo = new StatusInfo();
-			}
-		}
+		this.completeAdapterInfo = adapterInfo;
+	}
+	
+	public void swipeStatus(StatusInfo statusInfo) {
 		boolean isRefreshing = this.currentPage == initPage;
 		if (statusInfo != null && statusInfo.isSuccessful()) {
 			if (isRefreshing) {
-				resetAdapterInfo(adapterInfo);
-			} else {
+				resetAdapterInfo(this.completeAdapterInfo);
+			} else if (this.completeAdapterInfo != null) {
 				int oldItemCount = getItemCount();
-				updateAdapterInfo(adapterInfo);
+				updateAdapterInfo(this.completeAdapterInfo);
 				int newItemCount = getItemCount();
 				notifyItemRangeInserted(oldItemCount, newItemCount - oldItemCount);
 			}
-			swipeComplete(statusInfo);
+			super.swipeComplete(statusInfo);
 			if (hasMore()) {
 				swipeLoadReady();
 			}
 		} else {
-			if (isRefreshing) {
+			if (this.currentPage == initPage) {
 				resetAdapterInfo(null);
 			}
-			swipeComplete(statusInfo);
+			super.swipeComplete(statusInfo);
 		}
+		this.completeAdapterInfo = null;
 	}
 	
 	@Override

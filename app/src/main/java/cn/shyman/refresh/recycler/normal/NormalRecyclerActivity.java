@@ -118,7 +118,9 @@ public class NormalRecyclerActivity extends AppCompatActivity {
 		this.dataBinding.setCompleteSuccessClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				recyclerListAdapter.swipeResult(ColorListBean.create(listCount, pageCount));
+				ColorListBean colorListBean = ColorListBean.create(listCount, pageCount);
+				recyclerListAdapter.swipeResult(colorListBean);
+				recyclerListAdapter.swipeStatus(colorListBean.statusInfo);
 			}
 		});
 	}
@@ -130,9 +132,7 @@ public class NormalRecyclerActivity extends AppCompatActivity {
 		this.dataBinding.setCompleteFailureClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ColorListBean colorListBean = new ColorListBean();
-				colorListBean.statusInfo = new StatusInfo(StatusInfo.FAILURE);
-				recyclerListAdapter.swipeResult(colorListBean);
+				recyclerListAdapter.swipeStatus(new StatusInfo(StatusInfo.FAILURE));
 			}
 		});
 	}
@@ -144,9 +144,7 @@ public class NormalRecyclerActivity extends AppCompatActivity {
 		this.dataBinding.setCompleteErrorClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ColorListBean colorListBean = new ColorListBean();
-				colorListBean.statusInfo = new StatusInfo(StatusInfo.NETWORK_ERROR);
-				recyclerListAdapter.swipeResult(colorListBean);
+				recyclerListAdapter.swipeStatus(new StatusInfo(StatusInfo.NETWORK_ERROR));
 			}
 		});
 	}
