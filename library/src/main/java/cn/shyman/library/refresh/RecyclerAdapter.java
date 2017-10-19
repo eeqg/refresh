@@ -1118,4 +1118,30 @@ public abstract class RecyclerAdapter {
 			super(itemView);
 		}
 	}
+	
+	/**
+	 * 列表项装饰
+	 */
+	public static abstract class ItemDecoration extends RecyclerView.ItemDecoration {
+		
+		/**
+		 * 判断是否忽略绘制
+		 *
+		 * @param view   子控件
+		 * @param parent 父控件
+		 * @param state  列表状态
+		 * @return true忽略
+		 */
+		public boolean isSkipDraw(View view, RecyclerView parent, RecyclerView.State state) {
+			if (view.getVisibility() == View.GONE) {
+				return true;
+			}
+			RecyclerView.ViewHolder viewHolder = parent.getChildViewHolder(view);
+			if (viewHolder instanceof WrapHolder) {
+				RecyclerHolder recyclerHolder = ((WrapHolder) viewHolder).itemHolder;
+				return recyclerHolder instanceof RefreshHolder || recyclerHolder instanceof LoadHolder;
+			}
+			return false;
+		}
+	}
 }
