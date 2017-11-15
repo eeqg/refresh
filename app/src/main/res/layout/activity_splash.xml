@@ -1,15 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	tools:context="cn.shyman.refresh.SplashActivity">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="cn.shyman.refresh.SplashActivity">
 	
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="Hello World!"/>
-
-</LinearLayout>
+	<data>
+		
+		<import type="android.view.View.OnClickListener"/>
+		
+		<variable
+			name="scrollClickListener"
+			type="OnClickListener"/>
+		
+		<variable
+			name="nestedScrollClickListener"
+			type="OnClickListener"/>
+		
+		<variable
+			name="normalRecyclerClickListener"
+			type="OnClickListener"/>
+	</data>
+	
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
+		
+		<Button
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:onClick="@{scrollClickListener}"
+			android:text="ScrollView"
+			android:textAllCaps="false"/>
+		
+		<Button
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:onClick="@{nestedScrollClickListener}"
+			android:text="NestedScrollView"
+			android:textAllCaps="false"/>
+		
+		<Button
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:onClick="@{normalRecyclerClickListener}"
+			android:text="RecyclerView - Normal"
+			android:textAllCaps="false"/>
+	
+	</LinearLayout>
+</layout>

@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context="com.kycq.refresh.recycler.normal.NormalRecyclerActivity">
+        tools:context="cn.shyman.refresh.nested.NestedScrollActivity">
 	
 	<data>
 		
@@ -45,14 +45,23 @@
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="1.0"
-			app:refresh_statusMode="hide"
+			app:refresh_statusMode="auto"
 			app:refresh_viewHeader="@layout/refresh_basic_header"
 			app:refresh_viewStatus="@layout/refresh_basic_status">
 			
-			<android.support.v7.widget.RecyclerView
-				android:id="@+id/recyclerView"
+			<android.support.v4.widget.NestedScrollView
 				android:layout_width="match_parent"
-				android:layout_height="match_parent"/>
+				android:layout_height="match_parent">
+				
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:lineSpacingExtra="3dp"
+					android:padding="15dp"
+					android:text="@string/content"
+					android:textColor="#333333"
+					android:textSize="14sp"/>
+			</android.support.v4.widget.NestedScrollView>
 		</cn.shyman.library.refresh.RefreshLayout>
 		
 		<View

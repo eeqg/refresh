@@ -40,6 +40,7 @@ public class NormalRecyclerActivity extends AppCompatActivity {
 		observeCompleteSuccess();
 		observeCompleteFailure();
 		observeCompleteError();
+		observeForceRefresh();
 	}
 	
 	@Override
@@ -145,6 +146,18 @@ public class NormalRecyclerActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 				recyclerListAdapter.swipeStatus(new StatusInfo(StatusInfo.NETWORK_ERROR));
+			}
+		});
+	}
+	
+	/**
+	 * 强制刷新
+	 */
+	private void observeForceRefresh() {
+		this.dataBinding.setForceRefreshClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dataBinding.refreshLayout.forceRefresh();
 			}
 		});
 	}

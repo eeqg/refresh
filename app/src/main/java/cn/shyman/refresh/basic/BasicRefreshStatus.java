@@ -1,6 +1,7 @@
 package cn.shyman.refresh.basic;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -59,8 +60,10 @@ public class BasicRefreshStatus extends FrameLayout implements RefreshStatus<Sta
 	@Override
 	public boolean onRefreshComplete(StatusInfo statusInfo) {
 		if (statusInfo == null) {
-			mTVStatus.setText("refreshComplete");
-			return false;
+			mTVStatus.setText("refreshError");
+			return true;
+		} else if (TextUtils.isEmpty(statusInfo.statusContent)) {
+			mTVStatus.setText("refreshFailure");
 		} else {
 			mTVStatus.setText(statusInfo.statusContent);
 		}

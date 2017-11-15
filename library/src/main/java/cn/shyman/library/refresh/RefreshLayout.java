@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.support.annotation.IntDef;
-import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingChildHelper;
 import android.support.v4.view.NestedScrollingParent;
@@ -279,7 +278,7 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 		if (mRefreshStatus != null) {
 			mRefreshStatus.onRefreshReady();
 		}
-		toggleStatus(true);
+		toggleStatus(mStatusMode, true);
 	}
 	
 	/**
@@ -322,7 +321,50 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 		if (mRefreshStatus != null) {
 			mRefreshStatus.onRefresh();
 		}
-		toggleStatus(true);
+		toggleStatus(mStatusMode, true);
+	}
+	
+	/**
+	 * 强制变更刷新中状态
+	 */
+	public void forceRefresh() {
+		forceRefresh(false);
+	}
+	
+	/**
+	 * 强制变更刷新中状态
+	 *
+	 * @param scrollToRefresh true滑动到刷新位置
+	 */
+	public void forceRefresh(boolean scrollToRefresh) {
+		ensureTarget();
+		if (mStatus != STATUS_REFRESH && scrollToRefresh) {
+			mSmoothScroller.scrollToRefresh();
+		}
+		notifyForceRefresh();
+	}
+	
+	/**
+	 * 通知强制刷新中状态
+	 */
+	private void notifyForceRefresh() {
+		mStatus = STATUS_REFRESH;
+		if (mOnTaskListener != null) {
+			if (mTask != null) {
+				mOnTaskListener.onCancel(mTask);
+			}
+			mTask = mOnTaskListener.onTask();
+		}
+		if (mStatus != STATUS_REFRESH) {
+			return;
+		}
+		if (mRefreshHeader != null) {
+			mRefreshHeader.onRefresh();
+		}
+		if (mRefreshStatus != null) {
+			mRefreshStatus.onRefresh();
+		}
+		toggleStatus(STATUS_MODE_SHOW, true);
 	}
 	
 	/**
@@ -358,9 +400,9 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 		}
 		if (mRefreshStatus != null) {
 			// noinspection unchecked
-			toggleStatus(mRefreshStatus.onRefreshComplete(statusInfo));
+			toggleStatus(mStatusMode, mRefreshStatus.onRefreshComplete(statusInfo));
 		} else {
-			toggleStatus(false);
+			toggleStatus(mStatusMode, false);
 		}
 	}
 	
@@ -400,19 +442,20 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 	/**
 	 * 切换状态显示/隐藏
 	 *
+	 * @param statusMode   状态模式
 	 * @param isShowStatus true显示 false隐藏
 	 */
-	private void toggleStatus(boolean isShowStatus) {
+	private void toggleStatus(int statusMode, boolean isShowStatus) {
 		if (mViewStatus != null) {
-			if (mStatusMode == STATUS_MODE_SHOW) {
+			if (statusMode == STATUS_MODE_SHOW) {
 				if (isShowStatus) {
 					mViewStatus.setVisibility(VISIBLE);
 				} else {
 					mViewStatus.setVisibility(GONE);
 				}
-			} else if (mStatusMode == STATUS_MODE_HIDE) {
+			} else if (statusMode == STATUS_MODE_HIDE) {
 				mViewStatus.setVisibility(GONE);
-			} else if (mStatusMode == STATUS_MODE_AUTO) {
+			} else if (statusMode == STATUS_MODE_AUTO) {
 				if (!isShowStatus && mViewStatus.getVisibility() == VISIBLE) {
 					mViewStatus.setVisibility(GONE);
 				}
@@ -420,15 +463,15 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 		}
 		
 		if (mViewTarget != null) {
-			if (mStatusMode == STATUS_MODE_SHOW) {
+			if (statusMode == STATUS_MODE_SHOW) {
 				if (isShowStatus) {
 					mViewTarget.setVisibility(GONE);
 				} else {
 					mViewTarget.setVisibility(VISIBLE);
 				}
-			} else if (mStatusMode == STATUS_MODE_HIDE) {
+			} else if (statusMode == STATUS_MODE_HIDE) {
 				mViewTarget.setVisibility(VISIBLE);
-			} else if (mStatusMode == STATUS_MODE_AUTO) {
+			} else if (statusMode == STATUS_MODE_AUTO) {
 				if (!isShowStatus && mViewTarget.getVisibility() == GONE) {
 					mViewTarget.setVisibility(VISIBLE);
 				}
@@ -503,12 +546,12 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 					}
 				}
 				break;
-			case MotionEventCompat.ACTION_POINTER_DOWN:
+			case MotionEvent.ACTION_POINTER_DOWN:
 				mIsUnderTouch = true;
 				mActivePointerId = event.getPointerId(actionIndex);
 				mLastMotionY = getMotionEventY(event, actionIndex);
 				break;
-			case MotionEventCompat.ACTION_POINTER_UP:
+			case MotionEvent.ACTION_POINTER_UP:
 				onSecondaryPointerUp(event);
 				break;
 			case MotionEvent.ACTION_UP:
@@ -574,12 +617,12 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 					}
 				}
 				break;
-			case MotionEventCompat.ACTION_POINTER_DOWN:
+			case MotionEvent.ACTION_POINTER_DOWN:
 				mIsUnderTouch = true;
 				mActivePointerId = event.getPointerId(actionIndex);
 				mLastMotionY = getMotionEventY(event, actionIndex);
 				break;
-			case MotionEventCompat.ACTION_POINTER_UP:
+			case MotionEvent.ACTION_POINTER_UP:
 				onSecondaryPointerUp(event);
 				break;
 			case MotionEvent.ACTION_UP:
@@ -595,7 +638,7 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 	}
 	
 	private void onSecondaryPointerUp(MotionEvent event) {
-		final int pointerIndex = MotionEventCompat.getActionIndex(event);
+		final int pointerIndex = event.getActionIndex();
 		final int pointerId = event.getPointerId(pointerIndex);
 		if (pointerId == mActivePointerId) {
 			final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
@@ -708,7 +751,7 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 	
 	protected boolean canChildScrollUp() {
 		View target = mViewTarget.getVisibility() == VISIBLE ? mViewTarget : mViewStatus;
-		return target != null && ViewCompat.canScrollVertically(target, -1);
+		return target != null && target.canScrollVertically(-1);
 	}
 	
 	private boolean movePosition(int delta) {

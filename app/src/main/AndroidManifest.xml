@@ -17,6 +17,12 @@
 			</intent-filter>
 		</activity>
 		<activity android:name=".recycler.normal.NormalRecyclerActivity"/>
+		<activity
+			android:name=".nested.NestedScrollActivity"
+			android:screenOrientation="portrait"/>
+		<activity
+			android:name=".scroll.ScrollActivity"
+			android:screenOrientation="portrait"/>
 	</application>
 
 </manifest>
