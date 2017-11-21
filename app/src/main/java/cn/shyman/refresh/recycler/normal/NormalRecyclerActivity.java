@@ -157,7 +157,7 @@ public class NormalRecyclerActivity extends AppCompatActivity {
 		this.dataBinding.setForceRefreshClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dataBinding.refreshLayout.forceRefresh();
+				recyclerListAdapter.forceRefresh();
 			}
 		});
 	}

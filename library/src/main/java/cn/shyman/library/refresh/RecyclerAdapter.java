@@ -225,6 +225,10 @@ public abstract class RecyclerAdapter {
 			mTask = mOnTaskListener.onTask();
 		}
 		
+		if (mStatus != REFRESH) {
+			return;
+		}
+		
 		mRefreshHolder.onRefresh();
 		
 		int newWrapItemCount = mWrapRecyclerAdapter.getItemCount();
@@ -294,6 +298,10 @@ public abstract class RecyclerAdapter {
 				mOnTaskListener.onCancel(mTask);
 			}
 			mTask = mOnTaskListener.onTask();
+		}
+		
+		if (mStatus != LOADING) {
+			return;
 		}
 		
 		mLoadHolder.onLoading();
