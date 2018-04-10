@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context="cn.shyman.refresh.SplashActivity">
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:context="cn.shyman.refresh.SplashActivity">
 	
 	<data>
 		
-		<import type="android.view.View.OnClickListener"/>
+		<import type="android.view.View.OnClickListener" />
 		
 		<variable
 			name="scrollClickListener"
-			type="OnClickListener"/>
+			type="OnClickListener" />
 		
 		<variable
 			name="nestedScrollClickListener"
-			type="OnClickListener"/>
+			type="OnClickListener" />
+		
+		<variable
+			name="nestedScrollCoordinatorClickListener"
+			type="OnClickListener" />
 		
 		<variable
 			name="normalRecyclerClickListener"
-			type="OnClickListener"/>
+			type="OnClickListener" />
+		
+		<variable
+			name="coordinatorRecyclerClickListener"
+			type="OnClickListener" />
 	</data>
 	
 	<LinearLayout
@@ -30,21 +38,34 @@
 			android:layout_height="wrap_content"
 			android:onClick="@{scrollClickListener}"
 			android:text="ScrollView"
-			android:textAllCaps="false"/>
+			android:textAllCaps="false" />
 		
 		<Button
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:onClick="@{nestedScrollClickListener}"
 			android:text="NestedScrollView"
-			android:textAllCaps="false"/>
+			android:textAllCaps="false" />
+		
+		<Button
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:onClick="@{nestedScrollCoordinatorClickListener}"
+			android:text="NestedScrollView - Coordinator"
+			android:textAllCaps="false" />
 		
 		<Button
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:onClick="@{normalRecyclerClickListener}"
 			android:text="RecyclerView - Normal"
-			android:textAllCaps="false"/>
-	
+			android:textAllCaps="false" />
+		
+		<Button
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:onClick="@{coordinatorRecyclerClickListener}"
+			android:text="RecyclerView - Coordinator"
+			android:textAllCaps="false" />
 	</LinearLayout>
 </layout>

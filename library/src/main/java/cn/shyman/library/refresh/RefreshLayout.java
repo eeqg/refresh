@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.support.annotation.IntDef;
-import android.support.v4.view.NestedScrollingChild;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.view.NestedScrollingChild2;
 import android.support.v4.view.NestedScrollingChildHelper;
-import android.support.v4.view.NestedScrollingParent;
+import android.support.v4.view.NestedScrollingParent2;
 import android.support.v4.view.NestedScrollingParentHelper;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -22,7 +24,7 @@ import android.view.animation.Transformation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class RefreshLayout extends ViewGroup implements NestedScrollingParent, NestedScrollingChild {
+public class RefreshLayout extends ViewGroup implements NestedScrollingParent2, NestedScrollingChild2 {
 	/** 无效操作点 */
 	private static final int INVALID_POINTER = -1;
 	
@@ -662,12 +664,23 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 	}
 	
 	@Override
-	public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
+	public boolean onStartNestedScroll(@NonNull View child, @NonNull View target, int nestedScrollAxes, int type) {
+		if (type == ViewCompat.TYPE_NON_TOUCH) {
+			return false;
+		}
 		return (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
 	}
 	
 	@Override
-	public boolean startNestedScroll(int axes) {
+	public boolean onStartNestedScroll(@NonNull View child, @NonNull View target, int nestedScrollAxes) {
+		return onStartNestedScroll(child, target, nestedScrollAxes, ViewCompat.TYPE_TOUCH);
+	}
+	
+	@Override
+	public boolean startNestedScroll(@ViewCompat.ScrollAxis int axes, @ViewCompat.NestedScrollType int type) {
+		if (type == ViewCompat.TYPE_NON_TOUCH) {
+			return false;
+		}
 		boolean isNestedScroll = mNestedScrollingChildHelper.startNestedScroll(axes);
 		if (isNestedScroll) {
 			mIsUnderTouch = true;
@@ -676,11 +689,24 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 	}
 	
 	@Override
-	public void onNestedScrollAccepted(View child, View target, int nestedScrollAxes) {
+	public boolean startNestedScroll(int axes) {
+		return startNestedScroll(axes, ViewCompat.TYPE_TOUCH);
+	}
+	
+	@Override
+	public void onNestedScrollAccepted(@NonNull View child, @NonNull View target, int nestedScrollAxes, int type) {
+		if (type == ViewCompat.TYPE_NON_TOUCH) {
+			return;
+		}
 		mNestedScrollingParentHelper.onNestedScrollAccepted(child, target, nestedScrollAxes);
 		mSmoothScroller.abort();
 		startNestedScroll(nestedScrollAxes);
 		mIsNestedScrollInProgress = true;
+	}
+	
+	@Override
+	public void onNestedScrollAccepted(@NonNull View child, @NonNull View target, int nestedScrollAxes) {
+		onNestedScrollAccepted(child, target, nestedScrollAxes, ViewCompat.TYPE_TOUCH);
 	}
 	
 	@Override
@@ -689,12 +715,25 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 	}
 	
 	@Override
-	public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int[] offsetInWindow) {
+	public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed,
+	                                    int dxUnconsumed, int dyUnconsumed, @Nullable int[] offsetInWindow,
+	                                    @ViewCompat.NestedScrollType int type) {
+		if (type == ViewCompat.TYPE_NON_TOUCH) {
+			return false;
+		}
 		return mNestedScrollingChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow);
 	}
 	
 	@Override
-	public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
+	public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int[] offsetInWindow) {
+		return dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, ViewCompat.TYPE_TOUCH);
+	}
+	
+	@Override
+	public void onNestedScroll(@NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
+		if (type == ViewCompat.TYPE_NON_TOUCH) {
+			return;
+		}
 		dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, mOffsetInWindow);
 		if (!isEnabled()) {
 			return;
@@ -704,12 +743,29 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 	}
 	
 	@Override
-	public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed, int[] offsetInWindow) {
+	public void onNestedScroll(@NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
+		onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, ViewCompat.TYPE_TOUCH);
+	}
+	
+	@Override
+	public boolean dispatchNestedPreScroll(int dx, int dy, @Nullable int[] consumed,
+	                                       @Nullable int[] offsetInWindow, @ViewCompat.NestedScrollType int type) {
+		if (type == ViewCompat.TYPE_NON_TOUCH) {
+			return false;
+		}
 		return mNestedScrollingChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow);
 	}
 	
 	@Override
-	public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
+	public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed, int[] offsetInWindow) {
+		return dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, ViewCompat.TYPE_TOUCH);
+	}
+	
+	@Override
+	public void onNestedPreScroll(@NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
+		if (type == ViewCompat.TYPE_NON_TOUCH) {
+			return;
+		}
 		if (isEnabled() && mCurrentPosition > 0 && dy > 0 && movePosition(-dy)) {
 			consumed[1] += dy;
 		} else {
@@ -718,7 +774,15 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 	}
 	
 	@Override
-	public void onStopNestedScroll(View target) {
+	public void onNestedPreScroll(@NonNull View target, int dx, int dy, @NonNull int[] consumed) {
+		onNestedPreScroll(target, dx, dy, consumed, ViewCompat.TYPE_TOUCH);
+	}
+	
+	@Override
+	public void onStopNestedScroll(@NonNull View target, int type) {
+		if (type == ViewCompat.TYPE_NON_TOUCH) {
+			return;
+		}
 		mNestedScrollingParentHelper.onStopNestedScroll(target);
 		mIsNestedScrollInProgress = false;
 		mIsUnderTouch = false;
@@ -726,7 +790,15 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 	}
 	
 	@Override
-	public void stopNestedScroll() {
+	public void onStopNestedScroll(@NonNull View target) {
+		onStopNestedScroll(target, ViewCompat.TYPE_TOUCH);
+	}
+	
+	@Override
+	public void stopNestedScroll(@ViewCompat.NestedScrollType int type) {
+		if (type == ViewCompat.TYPE_NON_TOUCH) {
+			return;
+		}
 		if (mRefreshHeader == null) {
 			return;
 		}
@@ -747,6 +819,11 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 			}
 		}
 		mNestedScrollingChildHelper.stopNestedScroll();
+	}
+	
+	@Override
+	public void stopNestedScroll() {
+		stopNestedScroll(ViewCompat.TYPE_TOUCH);
 	}
 	
 	protected boolean canChildScrollUp() {
@@ -987,17 +1064,25 @@ public class RefreshLayout extends ViewGroup implements NestedScrollingParent, N
 	}
 	
 	@Override
-	public boolean hasNestedScrollingParent() {
+	public boolean hasNestedScrollingParent(@ViewCompat.NestedScrollType int type) {
+		if (type == ViewCompat.TYPE_NON_TOUCH) {
+			return false;
+		}
 		return mNestedScrollingChildHelper.hasNestedScrollingParent();
 	}
 	
 	@Override
-	public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
+	public boolean hasNestedScrollingParent() {
+		return hasNestedScrollingParent(ViewCompat.TYPE_TOUCH);
+	}
+	
+	@Override
+	public boolean onNestedFling(@NonNull View target, float velocityX, float velocityY, boolean consumed) {
 		return false;
 	}
 	
 	@Override
-	public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
+	public boolean onNestedPreFling(@NonNull View target, float velocityX, float velocityY) {
 		return false;
 	}
 	

@@ -7,7 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import cn.shyman.refresh.databinding.ActivitySplashBinding;
+import cn.shyman.refresh.nested.CoordinatorNestedScrollActivity;
 import cn.shyman.refresh.nested.NestedScrollActivity;
+import cn.shyman.refresh.recycler.normal.CoordinatorRecyclerActivity;
 import cn.shyman.refresh.recycler.normal.NormalRecyclerActivity;
 import cn.shyman.refresh.scroll.ScrollActivity;
 
@@ -21,7 +23,9 @@ public class SplashActivity extends AppCompatActivity {
 		
 		observeScrollView();
 		observeNestedScrollView();
+		observeNestedScrollViewCoordinator();
 		observeNormalRecycler();
+		observeCoordinatorRecycler();
 	}
 	
 	/**
@@ -49,6 +53,18 @@ public class SplashActivity extends AppCompatActivity {
 	}
 	
 	/**
+	 * NestedScrollView - Coordinator
+	 */
+	private void observeNestedScrollViewCoordinator() {
+		this.dataBinding.setNestedScrollCoordinatorClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(SplashActivity.this, CoordinatorNestedScrollActivity.class));
+			}
+		});
+	}
+	
+	/**
 	 * RecyclerView - Normal
 	 */
 	private void observeNormalRecycler() {
@@ -56,6 +72,18 @@ public class SplashActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 				startActivity(new Intent(SplashActivity.this, NormalRecyclerActivity.class));
+			}
+		});
+	}
+	
+	/**
+	 * RecyclerView - Coordinator
+	 */
+	private void observeCoordinatorRecycler() {
+		this.dataBinding.setCoordinatorRecyclerClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(SplashActivity.this, CoordinatorRecyclerActivity.class));
 			}
 		});
 	}
