@@ -122,14 +122,14 @@ public abstract class RecyclerAdapter {
 		mRecyclerView.setAdapter(mWrapRecyclerAdapter);
 		mRecyclerView.addOnScrollListener(mOnRecyclerScrollListener);
 		
-		mRefreshHolder = createRefreshHolder(mRecyclerView);
-		if (mRefreshHolder == null) {
-			throw new NullPointerException("must return RefreshHolder at onCreateRefreshHolder()");
-		}
-		mLoadHolder = createLoadHolder(mRecyclerView);
-		if (mLoadHolder == null) {
-			throw new NullPointerException("must return LoadHolder at onCreateLoadHolder()");
-		}
+		// mRefreshHolder = createRefreshHolder(mRecyclerView);
+		// if (mRefreshHolder == null) {
+		// 	throw new NullPointerException("must return RefreshHolder at onCreateRefreshHolder()");
+		// }
+		// mLoadHolder = createLoadHolder(mRecyclerView);
+		// if (mLoadHolder == null) {
+		// 	throw new NullPointerException("must return LoadHolder at onCreateLoadHolder()");
+		// }
 	}
 	
 	/**
@@ -195,7 +195,9 @@ public abstract class RecyclerAdapter {
 			mTask = null;
 		}
 		
-		mRefreshHolder.onRefreshReady();
+		if (mRefreshHolder != null) {
+			mRefreshHolder.onRefreshReady();
+		}
 		
 		notifyDataSetChanged();
 	}
@@ -229,7 +231,9 @@ public abstract class RecyclerAdapter {
 			return;
 		}
 		
-		mRefreshHolder.onRefresh();
+		if (mRefreshHolder != null) {
+			mRefreshHolder.onRefresh();
+		}
 		
 		int newWrapItemCount = mWrapRecyclerAdapter.getItemCount();
 		if (oldWrapItemCount == newWrapItemCount + 1) {
@@ -266,7 +270,9 @@ public abstract class RecyclerAdapter {
 			mTask = null;
 		}
 		
-		mLoadHolder.onLoadReady();
+		if (mLoadHolder != null) {
+			mLoadHolder.onLoadReady();
+		}
 		
 		int newWrapItemCount = mWrapRecyclerAdapter.getItemCount();
 		if (oldWrapItemCount != newWrapItemCount) {
@@ -304,7 +310,9 @@ public abstract class RecyclerAdapter {
 			return;
 		}
 		
-		mLoadHolder.onLoading();
+		if (mLoadHolder != null) {
+			mLoadHolder.onLoading();
+		}
 		
 		int newWrapItemCount = mWrapRecyclerAdapter.getItemCount();
 		if (oldWrapItemCount != newWrapItemCount) {
@@ -346,8 +354,12 @@ public abstract class RecyclerAdapter {
 			mTask = null;
 		}
 		
-		mRefreshHolder.onRefreshComplete(statusInfo);
-		mLoadHolder.onLoadComplete(statusInfo);
+		if (mRefreshHolder != null) {
+			mRefreshHolder.onRefreshComplete(statusInfo);
+		}
+		if (mLoadHolder != null) {
+			mLoadHolder.onLoadComplete(statusInfo);
+		}
 		
 		int newWrapItemCount = mWrapRecyclerAdapter.getItemCount();
 		if (itemCount == 0) {
@@ -378,7 +390,9 @@ public abstract class RecyclerAdapter {
 			mTask = null;
 		}
 		
-		mLoadHolder.onLoadComplete(statusInfo);
+		if (mLoadHolder != null) {
+			mLoadHolder.onLoadComplete(statusInfo);
+		}
 		
 		int newWrapItemCount = mWrapRecyclerAdapter.getItemCount();
 		if (oldWrapItemCount != newWrapItemCount) {
@@ -1004,8 +1018,10 @@ public abstract class RecyclerAdapter {
 		@Override
 		public WrapHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			if (viewType == TYPE_REFRESH) {
+				mRecyclerAdapter.mRefreshHolder = mRecyclerAdapter.createRefreshHolder(mRecyclerAdapter.mRecyclerView);
 				return mRecyclerAdapter.mRefreshHolder.wrapHolder;
 			} else if (viewType == TYPE_LOAD) {
+				mRecyclerAdapter.mLoadHolder = mRecyclerAdapter.createLoadHolder(mRecyclerAdapter.mRecyclerView);
 				return mRecyclerAdapter.mLoadHolder.wrapHolder;
 			} else {
 				RecyclerHolder recyclerHolder = mRecyclerAdapter.onCreateItemHolder(viewType);
