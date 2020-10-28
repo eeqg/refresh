@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
+//apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.github.abshyer'
 
@@ -27,6 +27,6 @@ dependencies {
 	})
 	compile fileTree(include: ['*.jar'], dir: 'libs')
 	
-	provided 'com.android.support:appcompat-v7:27.1.0'
+		provided 'com.android.support:appcompat-v7:27.1.0'
 	provided 'com.android.support:recyclerview-v7:27.1.0'
 }
